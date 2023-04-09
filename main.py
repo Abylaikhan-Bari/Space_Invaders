@@ -61,7 +61,7 @@ score_value = 0
 font = pygame.font.Font('freesansbold.ttf', 32)
 
 textX = 10
-testY = 10
+textY = 10
 
 # Game Over
 over_font = pygame.font.Font('freesansbold.ttf', 64)
@@ -201,7 +201,8 @@ while running:
             enemyX_change.append(4)
             enemyY_change.append(40)
 
-
+    # Show the score
+    show_score(textX, textY)
     # Draw the player on the screen
     player(playerX, playerY)
     # Draw the enemies on the screen
