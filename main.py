@@ -34,7 +34,7 @@ enemyX = []
 enemyY = []
 enemyX_change = []
 enemyY_change = []
-num_of_enemies = 12
+num_of_enemies = 11
 
 for i in range(num_of_enemies):
     enemyImg.append(pygame.image.load('enemy.png'))
@@ -62,7 +62,12 @@ font = pygame.font.Font('freesansbold.ttf', 32)
 
 textX = 10
 textY = 10
-
+# high_score_file = 'high_score.txt'
+# try:
+#     with open(high_score_file, 'r') as f:
+#         high_score = int(f.read())
+# except:
+#     high_score = 0
 # Game Over
 over_font = pygame.font.Font('freesansbold.ttf', 64)
 
@@ -70,13 +75,15 @@ over_font = pygame.font.Font('freesansbold.ttf', 64)
 def show_score(x, y):
     score = font.render("Score : " + str(score_value), True, (255, 255, 255))
     screen.blit(score, (x, y))
+    # high_score_text = font.render("High Score: " + str(high_score), True, (255, 255, 255))
+    # screen.blit(high_score_text, (x, y + 50))
 
 
 def game_over_text():
     over_text = over_font.render("GAME OVER", True, (255, 255, 255))
     screen.blit(over_text, (200, 250))
     restart_text = font.render("Press R to restart", True, (255, 255, 255))
-    screen.blit(restart_text, (230, 330))
+    screen.blit(restart_text, (250, 330))
 
 def player(x, y):
     screen.blit(playerImg, (x, y))
@@ -208,6 +215,12 @@ while running:
     # Draw the enemies on the screen
     for i in range(num_of_enemies):
         enemy(enemyX[i], enemyY[i], i)
+    if num_of_enemies == 0:
+        win_text = over_font.render("You won!", True, (255, 255, 255))
+        screen.blit(win_text, (250, 250))
+        restart_text = font.render("Press R to restart", True, (255, 255, 255))
+        screen.blit(restart_text, (250, 330))
+
     # Update the screen
     pygame.display.update()
 
