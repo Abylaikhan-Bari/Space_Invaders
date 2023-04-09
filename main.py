@@ -34,7 +34,7 @@ enemyX = []
 enemyY = []
 enemyX_change = []
 enemyY_change = []
-num_of_enemies = 6
+num_of_enemies = 12
 
 for i in range(num_of_enemies):
     enemyImg.append(pygame.image.load('enemy.png'))
@@ -75,7 +75,8 @@ def show_score(x, y):
 def game_over_text():
     over_text = over_font.render("GAME OVER", True, (255, 255, 255))
     screen.blit(over_text, (200, 250))
-
+    restart_text = font.render("Press R to restart", True, (255, 255, 255))
+    screen.blit(restart_text, (230, 330))
 
 def player(x, y):
     screen.blit(playerImg, (x, y))
@@ -94,34 +95,36 @@ def fire_bullet(x, y):
 def isCollision(enemyX, enemyY, bulletX, bulletY):
     distance = math.sqrt(math.pow(enemyX - bulletX, 2) + (math.pow(enemyY - bulletY, 2)))
     if distance < 27:
+        explosionSound = mixer.Sound("explosion.wav")
+        explosionSound.play()
         return True
     else:
         return False
 
 
+
 # Game Loop
 running = True
 while running:
-
     # RGB = Red, Green, Blue
     screen.fill((0, 0, 0))
     # Background Image
     screen.blit(background, (0, 0))
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-        # if keystroke is pressed check whether its right or left
+        # Move the player
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                 playerX_change = -5
-            if event.key == pygame.K_RIGHT:
+            elif event.key == pygame.K_RIGHT:
                 playerX_change = 5
-            if event.key == pygame.K_SPACE:
-                if bullet_state is "ready":
+            elif event.key == pygame.K_SPACE:
+                if bullet_state == "ready":
                     bulletSound = mixer.Sound("laser.wav")
                     bulletSound.play()
-                    # Get the current x cordinate of the spaceship
                     bulletX = playerX
                     fire_bullet(bulletX, bulletY)
 
@@ -129,19 +132,17 @@ while running:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 playerX_change = 0
 
-    # 5 = 5 + -0.1 -> 5 = 5 - 0.1
-    # 5 = 5 + 0.1
-
+    # Player movement
     playerX += playerX_change
     if playerX <= 0:
         playerX = 0
     elif playerX >= 736:
         playerX = 736
 
-    # Enemy Movement
+    # Enemy movement
     for i in range(num_of_enemies):
 
-        # Game Over
+        # Game over
         if enemyY[i] > 440:
             for j in range(num_of_enemies):
                 enemyY[j] = 2000
@@ -164,20 +165,48 @@ while running:
             bulletY = 480
             bullet_state = "ready"
             score_value += 1
-            enemyX[i] = random.randint(0, 736)
-            enemyY[i] = random.randint(50, 150)
+            del enemyX[i]
+            del enemyY[i]
+            del enemyX_change[i]
+            del enemyY_change[i]
+            num_of_enemies -= 1
+            break
 
-        enemy(enemyX[i], enemyY[i], i)
-
-    # Bullet Movement
+    # Bullet movement
     if bulletY <= 0:
         bulletY = 480
         bullet_state = "ready"
 
-    if bullet_state is "fire":
+    if bullet_state == "fire":
         fire_bullet(bulletX, bulletY)
         bulletY -= bulletY_change
 
+    # Restart the game
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_r]:
+        playerX = 370
+        playerY = 480
+        score_value = 0
+        num_of_enemies = 12
+        enemyImg = []
+        enemyX = []
+        enemyY = []
+        enemyX_change = []
+        enemyY_change = []
+        bullet_state = "ready"
+        for i in range(num_of_enemies):
+            enemyImg.append(pygame.image.load("enemy.png"))
+            enemyX.append(random.randint(0, 735))
+            enemyY.append(random.randint(50, 150))
+            enemyX_change.append(4)
+            enemyY_change.append(40)
+
+
+    # Draw the player on the screen
     player(playerX, playerY)
-    show_score(textX, testY)
+    # Draw the enemies on the screen
+    for i in range(num_of_enemies):
+        enemy(enemyX[i], enemyY[i], i)
+    # Update the screen
     pygame.display.update()
+
